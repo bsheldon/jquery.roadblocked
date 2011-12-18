@@ -21,7 +21,7 @@ Requires: jquery, jquery-cookie
         dismiss = buildDismissUI()
         content = @setContent(interstitial)
         link = interstitial['link']
-        @placeInterstitial(dismiss, content, link)
+        @placeInterstitial(dismiss, content, link, detectedDevice)
         setCookie(@options.lifetime, @options.campaignName)
       # return this
       @
@@ -45,8 +45,8 @@ Requires: jquery, jquery-cookie
       return present
      
     # Append interstitial element to target
-    @placeInterstitial = (dismiss, content, link) =>
-      container = $('<div\>', { id: 'roadblocked-container' })
+    @placeInterstitial = (dismiss, content, link, device) =>
+      container = $('<div\>', { id: 'roadblocked-container', class: device })
       container.html('')
       container.css
         'background-color' : @options.overlayBackgroundColor
@@ -57,7 +57,8 @@ Requires: jquery, jquery-cookie
         'position' : 'absolute'
         'z-index' : '100'
         'margin' : '0'
-        'display' : 'block'
+        'display' : 'block',
+        'overflow': 'hidden'
       $('body').prepend(container)
       $('#roadblocked-container').prepend(dismiss)
       if @options.dismissPlacement == 'top'
@@ -71,7 +72,9 @@ Requires: jquery, jquery-cookie
         $('#roadblocked-container').hide()
       )
       $('#inter-content').click(->
-        window.location = "#{link}"
+        if link?
+          window.location = "#{link}"
+          $('#roadblocked-container').hide()
       )
          
     # Build dismiss bar
@@ -91,21 +94,30 @@ Requires: jquery, jquery-cookie
         return self 
       # if jQuery object place it as dismiss UI
       else if typeof dismissLabel == 'object'
-        return dismissLabel
+        dismissLabel.attr('id','dismiss-bar')
+        dismissLabel.show()
+        return dismissLabel 
     
     # Set interstitial content   
     @setContent = (interstitial) =>
       if interstitial['img']?
         self = $('<div\>', { id: 'inter-content' })
+        # if dismiss label is image, use height config value to calculate diff
+        if typeof @options.dismissLabel == 'string'
+          height = (100 - parseFloat @options.dismissLabelHeight).toString() + '%'
+        else
+          height = '100%'
         self.css
-          'height' : (100 - parseFloat @options.dismissLabelHeight).toString() + '%'
+          'height' : height
           'width' : '100%'
           'background-image' : "url('#{@options.imgPath}/#{interstitial['img']}')"
           'background-position' : 'top'
           'background-repeat' : 'no-repeat'
           'background-size' : 'cover'
         return self 
-      else if interstitial['selector']
+      else if interstitial['selector']?
+        interstitial['selector'].attr('id','inter-content')
+        interstitial['selector'].show()
         return interstitial['selector']        
     
     setCookie = (lifetime, campaign) ->
@@ -121,10 +133,10 @@ Requires: jquery, jquery-cookie
     imgPath : 'images' # defaults to local images dir for plugin
     retnaPath : 'images/retna' # retna versions of files in subfolder retna
     overlayBackgroundColor : '#000'
-    dismissLabelHeight : '7.5%' # pixel, percentage (optional), or use stylesheet to set per device
+    dismissLabelHeight : '7.5%' # sets relative percentage of screen
     dismissLabelAlign : 'center'  # left, center, right (defaults right)
     dismissPlacement : 'top' # top or bottom (default top)
-    lifetime : 30 # run once per X period in days, 0 to run every visit
+    lifetime : 0 # run once per X period in days, 0 to run every visit
     campaignName : 'jqueryRoadblocked'
 
   $.fn.roadblocked = (options) ->
