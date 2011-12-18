@@ -34,7 +34,7 @@ And, full set of configuration options for more advanced control
       'overlayBackgroundColor' : '#000',
       'dismissLabel' : 'dismiss_label.jpg', // image for dismiss label (or selector)
       'dismissLabelAlign' : 'center', // alignment of dismiss label on screen
-      'dismissLabelHeight' : '7.5%', // height in px, percentage, or use stylesheet to set per device
+      'dismissLabelHeight' : '7.5%', // sets relative percentage of screen
       'dismissPlacement' : 'top', // top or bottom of screen (default top)
       'campaignName' : 'your-interstitial-campaign', // unique campaign name
       'lifetime' : 30, // run once per X period in days, 0 to run every visit (default)
