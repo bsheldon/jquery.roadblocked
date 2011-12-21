@@ -22,6 +22,7 @@ Requires: jquery, jquery-cookie
         content = @setContent(interstitial)
         link = interstitial['link']
         @placeInterstitial(dismiss, content, link, detectedDevice)
+        setBody(on)
         setCookie(@options.lifetime, @options.campaignName)
       # return this
       @
@@ -54,11 +55,10 @@ Requires: jquery, jquery-cookie
         'left' : '0'
         'height' : '100%'
         'width' : '100%'
-        'position' : 'absolute'
+        'position' : 'fixed'
         'z-index' : '100'
         'margin' : '0'
-        'display' : 'block',
-        'overflow': 'hidden'
+        'display' : 'block'
       $('body').prepend(container)
       $('#roadblocked-container').prepend(dismiss)
       if @options.dismissPlacement == 'top'
@@ -70,11 +70,13 @@ Requires: jquery, jquery-cookie
       # set tap regions to links
       $('#dismiss-bar').click(->
         $('#roadblocked-container').hide()
+        killBody()
       )
       $('#inter-content').click(->
         if link?
           window.location = "#{link}"
           $('#roadblocked-container').hide()
+          killBody()
       )
          
     # Build dismiss bar
@@ -82,15 +84,18 @@ Requires: jquery, jquery-cookie
       dismissLabel = @options.dismissLabel
       # if message is text, build standard label
       if typeof dismissLabel == 'string'
+        height =  (parseFloat(@options.dismissLabelHeight)/100) * $(window).height()
         self = $('<div\>', { id: 'dismiss-bar' })
         self.css
-          'height' : "#{@options.dismissLabelHeight}"
+          'height' : height
+          'width' : '90%'
+          'margin' : '0 auto'
           'background-color' : "#{@options.overlayBackgroundColor}"
           'text-align' : "#{@options.dismissLabelAlign}"
           'background-image' : "url('#{@options.imgPath}/#{@options.dismissLabel}')"
           'background-position' : "#{@options.dismissLabelAlign}"
           'background-repeat' : 'no-repeat'
-          'background-size' : '75%'
+          'background-size' : 'contain'
         return self 
       # if jQuery object place it as dismiss UI
       else if typeof dismissLabel == 'object'
@@ -113,13 +118,19 @@ Requires: jquery, jquery-cookie
           'background-image' : "url('#{@options.imgPath}/#{interstitial['img']}')"
           'background-position' : 'top'
           'background-repeat' : 'no-repeat'
-          'background-size' : 'cover'
+          'background-size' : 'contain'
         return self 
       else if interstitial['selector']?
         interstitial['selector'].attr('id','inter-content')
         interstitial['selector'].show()
-        return interstitial['selector']        
-    
+        return interstitial['selector']
+      
+    setBody = (state, device) =>
+      if state == on then $('body').css('position','fixed')
+      
+    killBody = =>  
+      $('body').css('position','static')
+      
     setCookie = (lifetime, campaign) ->
       jQuery.cookie("#{campaign}", 'done', { expires: lifetime })
       

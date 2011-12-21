@@ -7,7 +7,7 @@
   */
   (function($) {
     $.roadblocked = function(el, options) {
-      var buildDismissUI, scanDevice, setCookie,
+      var buildDismissUI, killBody, scanDevice, setBody, setCookie,
         _this = this;
       this.el = el;
       this.$el = $(el);
@@ -21,6 +21,7 @@
           content = _this.setContent(interstitial);
           link = interstitial['link'];
           _this.placeInterstitial(dismiss, content, link, detectedDevice);
+          setBody(true);
           setCookie(_this.options.lifetime, _this.options.campaignName);
         }
         return _this;
@@ -61,11 +62,10 @@
           'left': '0',
           'height': '100%',
           'width': '100%',
-          'position': 'absolute',
+          'position': 'fixed',
           'z-index': '100',
           'margin': '0',
-          'display': 'block',
-          'overflow': 'hidden'
+          'display': 'block'
         });
         $('body').prepend(container);
         $('#roadblocked-container').prepend(dismiss);
@@ -77,30 +77,35 @@
           $('#dismiss-bar').after(content);
         }
         $('#dismiss-bar').click(function() {
-          return $('#roadblocked-container').hide();
+          $('#roadblocked-container').hide();
+          return killBody();
         });
         return $('#inter-content').click(function() {
           if (link != null) {
             window.location = "" + link;
-            return $('#roadblocked-container').hide();
+            $('#roadblocked-container').hide();
+            return killBody();
           }
         });
       };
       buildDismissUI = function() {
-        var dismissLabel, self;
+        var dismissLabel, height, self;
         dismissLabel = _this.options.dismissLabel;
         if (typeof dismissLabel === 'string') {
+          height = (parseFloat(_this.options.dismissLabelHeight) / 100) * $(window).height();
           self = $('<div\>', {
             id: 'dismiss-bar'
           });
           self.css({
-            'height': "" + _this.options.dismissLabelHeight,
+            'height': height,
+            'width': '90%',
+            'margin': '0 auto',
             'background-color': "" + _this.options.overlayBackgroundColor,
             'text-align': "" + _this.options.dismissLabelAlign,
             'background-image': "url('" + _this.options.imgPath + "/" + _this.options.dismissLabel + "')",
             'background-position': "" + _this.options.dismissLabelAlign,
             'background-repeat': 'no-repeat',
-            'background-size': '75%'
+            'background-size': 'contain'
           });
           return self;
         } else if (typeof dismissLabel === 'object') {
@@ -126,7 +131,7 @@
             'background-image': "url('" + _this.options.imgPath + "/" + interstitial['img'] + "')",
             'background-position': 'top',
             'background-repeat': 'no-repeat',
-            'background-size': 'cover'
+            'background-size': 'contain'
           });
           return self;
         } else if (interstitial['selector'] != null) {
@@ -134,6 +139,12 @@
           interstitial['selector'].show();
           return interstitial['selector'];
         }
+      };
+      setBody = function(state, device) {
+        if (state === true) return $('body').css('position', 'fixed');
+      };
+      killBody = function() {
+        return $('body').css('position', 'static');
       };
       setCookie = function(lifetime, campaign) {
         return jQuery.cookie("" + campaign, 'done', {
