@@ -22,7 +22,7 @@
           link = interstitial['link'];
           _this.placeInterstitial(dismiss, content, link, detectedDevice);
           setBody(true);
-          setCookie(_this.options.lifetime, _this.options.campaignName);
+          setCookie(_this.options.lifetime, _this.options.campaignName, _this.options.path);
         }
         return _this;
       };
@@ -146,9 +146,10 @@
       killBody = function() {
         return $('body').css('position', 'static');
       };
-      setCookie = function(lifetime, campaign) {
+      setCookie = function(lifetime, campaign, path_dir) {
         return jQuery.cookie("" + campaign, 'done', {
-          expires: lifetime
+          expires: lifetime,
+          path: path_dir
         });
       };
       this.isRetna = function() {
@@ -167,6 +168,7 @@
       dismissLabelAlign: 'center',
       dismissPlacement: 'top',
       lifetime: 0,
+      path: '/',
       campaignName: 'jqueryRoadblocked'
     };
     $.fn.roadblocked = function(options) {

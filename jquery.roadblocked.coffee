@@ -23,7 +23,7 @@ Requires: jquery, jquery-cookie
         link = interstitial['link']
         @placeInterstitial(dismiss, content, link, detectedDevice)
         setBody(on)
-        setCookie(@options.lifetime, @options.campaignName)
+        setCookie(@options.lifetime, @options.campaignName, @options.path)
       # return this
       @
     
@@ -131,8 +131,8 @@ Requires: jquery, jquery-cookie
     killBody = =>  
       $('body').css('position','static')
       
-    setCookie = (lifetime, campaign) ->
-      jQuery.cookie("#{campaign}", 'done', { expires: lifetime })
+    setCookie = (lifetime, campaign, path_dir) ->
+      jQuery.cookie("#{campaign}", 'done', { expires: lifetime, path: path_dir })
       
     # Method to check whether device is retna display
     @isRetna = =>
@@ -148,6 +148,7 @@ Requires: jquery, jquery-cookie
     dismissLabelAlign : 'center'  # left, center, right (defaults right)
     dismissPlacement : 'top' # top or bottom (default top)
     lifetime : 0 # run once per X period in days, 0 to run every visit
+    path : '/' # cookie path, defaults to full domain
     campaignName : 'jqueryRoadblocked'
 
   $.fn.roadblocked = (options) ->
