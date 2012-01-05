@@ -38,6 +38,7 @@ And, full set of configuration options for more advanced control
       'dismissPlacement' : 'top', // top or bottom of screen (default top)
       'campaignName' : 'your-interstitial-campaign', // unique campaign name
       'lifetime' : 30, // run once per X period in days, 0 to run every visit (default)
+      'path' : '/' // cookie path, defaults to full domain scope
   	});
 ```
 
