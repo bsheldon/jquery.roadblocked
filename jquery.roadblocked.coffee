@@ -15,9 +15,12 @@ Requires: jquery, jquery-cookie
     
     @init = =>
       @options = $.extend {}, $.roadblocked.defaults, options
+      # First, test to see if browser cookies enabled
+      jQuery.cookie('probe','landed')
+      cookiesEnabled = true if jQuery.cookie('probe')?
       detectedDevice = scanDevice @options.devices
-      # if specified device present and not cookied, proceed
-      if (interstitial = @options.devices[detectedDevice]) and (jQuery.cookie("#{@options.campaignName}") != 'done')
+      # if specified device present and enabled but not yet cookied, proceed
+      if (interstitial = @options.devices[detectedDevice]) and cookiesEnabled and (jQuery.cookie("#{@options.campaignName}") != 'done')
         dismiss = buildDismissUI()
         content = @setContent(interstitial)
         link = interstitial['link']

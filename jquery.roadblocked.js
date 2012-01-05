@@ -13,10 +13,12 @@
       this.$el = $(el);
       this.$el.data("roadblocked", this);
       this.init = function() {
-        var content, detectedDevice, dismiss, interstitial, link;
+        var content, cookiesEnabled, detectedDevice, dismiss, interstitial, link;
         _this.options = $.extend({}, $.roadblocked.defaults, options);
+        jQuery.cookie('probe', 'landed');
+        if (jQuery.cookie('probe') != null) cookiesEnabled = true;
         detectedDevice = scanDevice(_this.options.devices);
-        if ((interstitial = _this.options.devices[detectedDevice]) && (jQuery.cookie("" + _this.options.campaignName) !== 'done')) {
+        if ((interstitial = _this.options.devices[detectedDevice]) && cookiesEnabled && (jQuery.cookie("" + _this.options.campaignName) !== 'done')) {
           dismiss = buildDismissUI();
           content = _this.setContent(interstitial);
           link = interstitial['link'];
